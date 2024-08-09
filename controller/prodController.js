@@ -11,11 +11,12 @@ exports.prodList=async (req,res)=>{
 
 exports.addProd=async (req,res)=>{
     const {name,price,quantity}=req.body;
+    const max=quantity
     try{
         if(price<=0 || quantity<=0){
             return res.status(400).json({message:'valeur négatif non accepté'});
         }
-        const prod=await Product.create({name,price,quantity,quantity});//quantity should be the first maximal value
+        const prod=await Product.create({name,price,quantity,max});
         res.status(201).json({succses:true,message:prod});
     }catch(err){
         res.status(400).json({succes:false,message:err.message});

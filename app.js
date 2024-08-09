@@ -12,7 +12,7 @@ const authRoutes=require('./routes/authRoutes');
 const prodRoutes=require('./routes/prodRoutes');
 
 const corsOption={
-    origin:'http://localhost:3000',
+    origin:'http://localhost:3000/',
     methods:['POST','GET','PUT','DELETE'],
     credentials:true
 }
@@ -23,6 +23,7 @@ app
     .use(cors({corsOption}))
     .use(morgan('dev'))
     .use(bodyParser.json())
+    .use(express.json())
     .use('/auth',authRoutes)
     .use('/prod',prodRoutes)
     .use(express.static(path.join(__dirname,'public')))
