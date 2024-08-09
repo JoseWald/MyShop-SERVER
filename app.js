@@ -2,14 +2,31 @@ const express=require('express');
 const app=express();
 const morgan=require('morgan');
 const bodyParser=require('body-parser');
+const cors=require('cors');
+const path=require('path');
 
 const connectDB=require('./config/db');
-const authRoutes=require('./routes/authRoutes');
 const {errorHandler}=require('./middleware/errorMiddleware');
 
+const authRoutes=require('./routes/authRoutes');
+const prodRoutes=require('./routes/prodRoutes');
+
+const corsOption={
+    origin:'http://localhost:3000',
+    methods:['POST','GET','PUT','DELETE'],
+    credentials:true
+}
+
+connectDB();
+
 app
+    .use(cors({corsOption}))
     .use(morgan('dev'))
     .use(bodyParser.json())
+    .use('/auth',authRoutes)
+    .use('/prod',prodRoutes)
+    .use(express.static(path.join(__dirname,'public')))
+    .use(errorHandler)
 
 
 

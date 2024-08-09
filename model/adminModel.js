@@ -5,7 +5,6 @@ const adminSchema=new mongoose.Schema({
     username:{
         type:String,
         required:true,
-        unique:true,
     },
     password:{
         type:String,
@@ -20,7 +19,7 @@ adminSchema.pre('save',async function(next){
         return next();
     }
     const salt=await bcrypt.genSalt(10);
-    this.password=await bcrypt.hash(this.password.hash,salt);
+    this.password=await bcrypt.hash(this.password,salt);
     next();
 })
 

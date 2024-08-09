@@ -1,10 +1,15 @@
 const express=require('express');
-const {register,login,getProfile}=require('../controller/authController');
-const {security}=require('../middleware/authMiddleware');
+const {register,login}=require('../controller/authController');
+
+const protectedData=require('../middleware/authMiddleware');
+const {singleAdmin}=require('../middleware/singleAdmin');
+
 
 const router=express.Router();
 
-router.post('/register',register);
+router.post('/register',singleAdmin,register);
 router.post('/login',login);
 
-module.exports={router};
+router.get('/protecteddata',protectedData,(req,res)=>{res.json({message:"token accessible"})});
+
+module.exports=router;

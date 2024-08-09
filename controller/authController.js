@@ -1,13 +1,12 @@
 const Admin=require('../model/adminModel');
 const jwt=require('jsonwebtoken');
-
+const JWT_SECRET=require('../env/JWTSecret');
 
 exports.register=async (req,res)=>{
     const {username,password}=req.body;
-
     try{
         const admin=await Admin.create({username,password});
-        const token=jwt.sign({id:user._id},process.env.JWT_SECRET,{
+        const token=jwt.sign({adminId:admin._id},JWT_SECRET,{
             expiresIn:'1h',
         });
 
@@ -28,11 +27,8 @@ exports.login=async (req,res)=>{
             const admin=await Admin.findOne({username});
             if(!admin || !admin.matchPassword(password)){
                 res.status(401).json({ success:false,message:'accès interdit'});
-            }else if (admin){
-                res.json({username:admin.username});
             }
-
-            const token=jwt.sign({id:user._id},process.env.JWT_SECRET,{
+            const token=jwt.sign({adminId:admin._id},JWT_SECRET,{
                 expiresIn:'1h',
             });
 
@@ -42,6 +38,6 @@ exports.login=async (req,res)=>{
             });
 
         }catch(error){
-            res.status(400).json({succes:false , message:err.message});
+            res.status(400).json({succes:false , message:error.message});
         }
 }

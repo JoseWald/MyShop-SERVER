@@ -15,4 +15,4 @@ const singleAdmin= async (req,res,next)=>{
 
 }
 
-module.exports=singleAdmin;
+module.exports={singleAdmin};
