@@ -3,10 +3,11 @@ const { prodList , addProd , deleteProd , updateProd }=require('../controller/pr
 const router=express.Router();
 
 const {uniqueProd}=require('../middleware/uniqueProdMiddleware');
+const {validatedQuantity}=require('../middleware/quentityProtection');
 
 router.get('/prodList',prodList);
 router.post('/addProd',uniqueProd,addProd);
 router.delete('/deleteProd',deleteProd);
-router.put('/updateProd',updateProd);
+router.put('/updateProd',uniqueProd,validatedQuantity,updateProd);
 
 module.exports=router;

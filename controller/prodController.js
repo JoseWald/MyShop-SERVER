@@ -14,7 +14,7 @@ exports.addProd=async (req,res)=>{
     const max=quantity
     try{
         if(price<=0 || quantity<=0){
-            return res.status(400).json({message:'valeur négatif non accepté'});
+            return res.status(400).json({message:'null or negative price and quantity denied'});
         }
         const prod=await Product.create({name,price,quantity,max});
         res.status(201).json({succses:true,message:prod});
@@ -24,10 +24,13 @@ exports.addProd=async (req,res)=>{
 }
 
 exports.deleteProd=async (req,res)=>{
+    const {name}=req.body;
     try{
-        const delProd= await Product.findOneAndDelete({name:req.body})
+        const delProd= await Product.findOneAndDelete(name)
         if(!delProd){
-            res.status(404).json({message:'Produit introuvable'});
+            res.status(404).json({message:'Product not found'});
+        }else{
+            res.status(200).json({message:'product deleted successfully'});
         }
     }catch(err){
         res.status(400).json({message:err.message});
@@ -43,13 +46,14 @@ exports.updateProd=async (req,res)=>{
            return res.status(404).json({message:'Product not found'})
         }
 
-        const max=prodName.quantity<quantity?quantity:prodName.quantity;
+        const max = Math.max(prodName.max, quantity);
 
-        const update={
-            price:price,
-            quantity:quantity,
-            max:max
-        }
+        const update = {
+            price,
+            quantity,
+            max
+        };
+        
         const updateProduct=await Product.findOneAndUpdate(
             {name},update,{new:true,runValidators:true}
         )
