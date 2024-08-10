@@ -1,5 +1,6 @@
 const Product=require('../model/prodModel');
 const Facture=require('../model/factureModel');
+const whisList=require('../model/wishList');
 
 
 exports.Sell= async(req,res)=>{
@@ -53,4 +54,22 @@ exports.Sell= async(req,res)=>{
     }catch(err){
         res.status(400).json({message:err.message});
     }
+}
+
+exports.wishList=async (req,res)=>{
+    const {name,number}=req.body
+
+    try{
+        const nameFound=await whisList.findOne({name:name});
+        if(nameFound){
+            await nameFound.findOneAndUpdate(
+                {name},{number},{new:true,runValidators:true}
+            )
+        }else{
+            await nameFound.create({name,number});
+        }
+    }catch(err){
+        res.status(400).json({message:err.message});
+    }
+  
 }
