@@ -5,9 +5,10 @@ const whisList=require('../model/wishList');
 
 exports.Sell= async(req,res)=>{
     let totalAmount=0;
-    const {givenAmount,customer,purchasedProduct}=req.body;
-    const date=new Date.now;
+    const {givenAmount,customer}=req.body;
+    const date=new Date();
     try{
+        const purchasedProduct = await whisList.find({});
         const Products=await Promise.all(purchasedProduct.map(async(prod)=>{
             const product=await Product.find({name:prod.name});
             if(product && prod.quantity<=product.quantity){
@@ -68,6 +69,7 @@ exports.wishList=async (req,res)=>{
         }else{
             await nameFound.create({name,number});
         }
+        res.status(201).json({ success: true, message: "Wish list updated" });
     }catch(err){
         res.status(400).json({message:err.message});
     }
