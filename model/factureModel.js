@@ -6,7 +6,14 @@ const factureSchema=new mongoose.Schema({
     },
     customer:{
         type:String,
-        required:true
+        required:true,
+        trim:true,
+        validate:{
+            validator:function (v){
+                return v && v.length>0
+            }
+        },
+        message:"Customer's name required"
     },
     products:[{
         name:{
@@ -24,15 +31,18 @@ const factureSchema=new mongoose.Schema({
     }],
     totalAmount:{
         type:Number,
-        required:true
+        required:true,
+        min:0
     },
     givenAmount:{
         type:Number,
-        required:true
+        required:true,
+        min:0
     },
     changeAmount:{
         type:Number,
-        required:true
+        required:true,
+        min:0
     }//tokony change fa lasa tsy clean    
 })
 

@@ -6,7 +6,12 @@ const wishListSchema=new mongoose.Schema({
         unique:true,
         required:true
     },
-    number:{
+    price:{
+        type:Number,
+        required:true,
+        min:[0,'prix négatif non autorisé']
+    },
+    quantity:{
         type:Number,
         required:true,
         min:[0,'quantité négatif non autorisé']
@@ -14,4 +19,4 @@ const wishListSchema=new mongoose.Schema({
 
 })
 
-module.exports=mongoose.model('whisList',wishListSchema);
+module.exports=mongoose.model('wishList',wishListSchema);
