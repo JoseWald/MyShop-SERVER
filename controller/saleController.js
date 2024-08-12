@@ -1,6 +1,7 @@
 const Product = require('../model/prodModel');
 const Facture = require('../model/factureModel');
 const WishList = require('../model/wishList');
+const Stat=require('../model/stat');
 
 exports.Sell = async (req, res) => {
     let totalAmount = 0;
@@ -51,7 +52,26 @@ exports.Sell = async (req, res) => {
                 .then(ok=>{console.log('ok')})
                 .catch(err=>{res.status(400).json({message:err.message})})
         await WishList.deleteMany({});
+        
+        const startOfDay = new Date(date);
+        startOfDay.setHours(0, 0, 0, 0);
 
+        const endOfDay = new Date(date);
+        endOfDay.setHours(23, 59, 59, 999);
+
+        const existingStat = await Stat.findOne({ date: { $gte: startOfDay, $lte: endOfDay } });
+        
+        if (existingStat) {
+            existingStat.totalSales += totalAmount;
+            await existingStat.save();
+        } else {
+            
+            const newStat = new Stat({
+                date: date,
+                totalSales: totalAmount
+            });
+            await newStat.save();
+        }
         res.status(200).json({ success: true, message: "Sale completed" });
         
     } catch (err) {
