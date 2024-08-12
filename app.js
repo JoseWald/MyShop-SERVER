@@ -11,6 +11,7 @@ const {errorHandler}=require('./middleware/errorMiddleware');
 const authRoutes=require('./routes/authRoutes');
 const prodRoutes=require('./routes/prodRoutes');
 const factureRoute=require('./routes/factureRoute');
+const saleHistory=require('./routes/HistoryRoute');
 
 const corsOption={
     origin:'http://localhost:3000/',
@@ -28,6 +29,7 @@ app
     .use('/auth',authRoutes)
     .use('/prod',prodRoutes)
     .use('/sell',factureRoute)
+    .use('/history',saleHistory)
     .use(express.static(path.join(__dirname,'public')))
     .use(errorHandler)
 
