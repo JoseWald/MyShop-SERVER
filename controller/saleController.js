@@ -104,3 +104,12 @@ exports.deleteWish=async (req,res)=>{
         res.status(400).json({message:err.message});
     }
 }
+
+exports.setRecentBill=async (req,res)=>{
+    try{
+        const recentSale= await Facture.findOne().sort({_id:-1}).exec();
+        res.status(200).json({message:recentSale});
+    }catch(err){
+        res.status(400).json({message:err.message});
+    }
+}
