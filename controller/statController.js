@@ -3,7 +3,7 @@ const Prod=require('../model/prodModel');
 const Stat=require('../model/stat');
 const cron = require('node-cron');
 
-exports=scheduleDailyCleanup = () => {
+exports.scheduleDailyCleanup = () => {
     cron.schedule('0 0 * * 0', async () => {
         try {
             await Stat.deleteMany({
@@ -16,7 +16,7 @@ exports=scheduleDailyCleanup = () => {
     });
 };
 
-exports=dailyGain= async (req,res)=>{
+exports.dailyGain= async (req,res)=>{
     try{
         const start=new Date();
         start.setHours(0,0,0,0);
@@ -25,7 +25,7 @@ exports=dailyGain= async (req,res)=>{
         end.setHours(23,59,59,999);
 
         const data = await factureModel.find({
-            date: { $gte: startOfDay, $lte: endOfDay }
+            date: { $gte: start, $lte: end }
         });
 
         const totalSum = data.reduce((sum, doc) => sum + (doc.totalAmount || 0), 0);
@@ -44,7 +44,7 @@ exports.prodNbr = async (req, res) => {
      
         const count = await Prod.countDocuments({});
         
-        res.status(200).json({ totalProducts: count });
+        res.status(200).json({ message:count });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
@@ -65,7 +65,7 @@ exports.outOfStock = async (req, res) => {
 
         const products = await Prod.find({ quantity: 0 });
         
-        res.status(200).json({ products });
+        res.status(200).json({ message:products });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
@@ -73,7 +73,6 @@ exports.outOfStock = async (req, res) => {
 
 exports.getWeeklyStat = async (req, res) => {
     try {
-        
         const startOfWeek = new Date();
         startOfWeek.setHours(0, 0, 0, 0);
         startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
@@ -82,26 +81,33 @@ exports.getWeeklyStat = async (req, res) => {
         endOfWeek.setHours(23, 59, 59, 999);
         endOfWeek.setDate(endOfWeek.getDate() + (6 - endOfWeek.getDay()));
 
-        const weeklyStats = await Stat.find({
+        const stats = await Stat.find({
             date: { $gte: startOfWeek, $lte: endOfWeek }
         });
 
-        if (weeklyStats.length > 0) {
-            res.status(200).json({ message:weeklyStats });
-        } else {
-            res.status(404).json({ message: "No statistics found for this week" });
-        }
+        let weeklyStats = Array(7).fill(0);
+
+        stats.forEach(stat => {
+            const day = (new Date(stat.date)).getDay();
+            weeklyStats[day] = stat.totalSales; 
+        });
+
+        res.status(200).json({ weeklyStats });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 };
 
+
 exports.mostSelled = async (req, res) => {
     try {
         const products = await Prod.find({});
+        if (!products.length) {
+            return res.status(404).json({ message: "Aucun produit trouvé" });
+        }
 
         const productSales = products.map((prd) => {
-            const soldQuantity = prd.max - prd.quantity; 
+            const soldQuantity = prd.max - prd.quantity;
             return {
                 name: prd.name,
                 sold: soldQuantity
@@ -110,11 +116,9 @@ exports.mostSelled = async (req, res) => {
 
         const topProducts = productSales.sort((a, b) => b.sold - a.sold).slice(0, 3);
 
-        res.status(200).json({ message: topProducts });
+        res.status(200).json({ topProducts });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 };
-
-
 
