@@ -2,6 +2,8 @@ const express=require('express');
 
 const {Sell,wishList,showWishList,deleteWish, setRecentBill}=require('../controller/saleController');
 
+const auth = require('../middleware/authMiddleware');
+
 
 const {acceptedReq}=require('../middleware/wishListMiddleware');
 const {billingProtection}=require('../middleware/billingMiddleware');
